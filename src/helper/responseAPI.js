@@ -6,7 +6,7 @@ const successResponse = (res, message, status_code, data) => {
     });
 }
 
-const errorResponse = (res, message, data, status_code) => {
+const errorResponse = (res, message, status_code, data) => {
     return res.status(status_code || 500).json({
         status: 'error',
         message: message || 'failed',

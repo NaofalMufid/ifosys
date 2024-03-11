@@ -33,9 +33,20 @@ const deleteOrg = async (id) => {
     }
 };
 
-const getAllOrg = async () => {
+const getAllOrg = async (user) => {
+    const { banom_id } = user;
+    let whereClause = ``;
+    const replacements = [];
+    if (banom_id !== null) {
+        whereClause += ' AND o.id_banom = ?';
+        replacements.push(banom_id);
+    }
+    const payload = {
+        filter: whereClause,
+        replacements,
+    }
     try {
-        const data = await OrgData.getAllOrg();
+        const data = await OrgData.getAllOrg(payload);
         return data;
     } catch (err) {
         throw err;

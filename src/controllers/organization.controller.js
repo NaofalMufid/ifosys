@@ -33,7 +33,7 @@ const deleteOrg = async (req, res, next) => {
 
 const allOrg = async (req, res, next) => {
     try {
-        const data = await OrgService.getAllOrg();
+        const data = await OrgService.getAllOrg(req.user);
         return successResponse(res, 'Success get all Organization', 200, data);
     } catch (err) {
         next(err);

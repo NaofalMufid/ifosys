@@ -53,15 +53,17 @@ const findOrgById = async (id) => {
     }
 };
 
-const getAllOrg = async () => {
+const getAllOrg = async (payload) => {
+    const { filter, replacements } = payload;
     try {
         const [data] = await pool.query(`
             SELECT o.*, u.name AS admin_name, b.name AS banom_name
             FROM organizations o
-            LEFT JOIN users u ON o.id_admin = u.user_id 
-            LEFT JOIN banom b ON o.id_banom = b.banom_id 
+            LEFT JOIN users u ON o.id_admin = u.user_id
+            LEFT JOIN banom b ON o.id_banom = b.banom_id
+            WHERE 1=1 ${filter}
             ORDER BY org_id ASC
-        `);
+        `, replacements);
         return data;
     } catch (err) {
         throw err;

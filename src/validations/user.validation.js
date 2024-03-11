@@ -51,10 +51,18 @@ const requestForgotPassword = {
     })
 };
 
+const requestLogin = {
+    body: Joi.object().keys({
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
+    })
+};
+
 module.exports = {
     newUser,
     updateUser,
     changePassword,
     forgotPassword,
     requestForgotPassword,
+    requestLogin,
 };

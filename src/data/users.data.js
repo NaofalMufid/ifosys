@@ -41,7 +41,14 @@ const deleteUser = async (user_id) => {
 
 const findUserById = async (user_id) => {
     try {
-        const [find_user] = await pool.query(`SELECT user_id FROM users WHERE user_id = ?`, [user_id]);
+        const [find_user] = await pool.query(`
+            SELECT
+                u.user_id, u.name, u.email, u.phone_number, u.role_id, r.name AS role_name, u.id_banom, b.name AS banom_name
+            FROM users u
+            LEFT JOIN user_roles r ON u.role_id = r.role_id
+            LEFT JOIN banom b ON u.id_banom = b.banom_id
+            WHERE user_id = ?
+        `, [user_id]);
         if (find_user.length < 1) {
             const err = new BadRequestError('user not found!');
             throw err;
@@ -52,11 +59,28 @@ const findUserById = async (user_id) => {
     }
 };
 
+const authUserByEmail = async (email) => {
+    try {
+        const [find_user] = await pool.query(`
+            SELECT u.user_id, u.email, u.password, u.role_id, u.id_banom
+            FROM users u WHERE u.email = ?
+        `, [email]);
+        if (find_user.length < 1) {
+            const err = new BadRequestError('user not found!');
+            throw err;
+        }
+        const data = find_user[0];
+        return data;
+    } catch (err) {
+        throw err;
+    }
+};
+
 const findAllUsers = async () => {
     try {
         const [data] = await pool.query(`
             SELECT 
-                u.user_id, u.name, u.email, u.phone_number, u.password, u.role_id, r.name AS role_name, u.id_banom, b.name AS banom_name
+                u.user_id, u.name, u.email, u.phone_number, u.role_id, r.name AS role_name, u.id_banom, b.name AS banom_name
             FROM users u
             LEFT JOIN user_roles r ON u.role_id = r.role_id
             LEFT JOIN banom b ON u.id_banom = b.banom_id
@@ -73,5 +97,6 @@ module.exports = {
     updateUser,
     deleteUser,
     findUserById,
+    authUserByEmail,
     findAllUsers,
 };
